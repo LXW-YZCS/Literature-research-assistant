@@ -1,5 +1,5 @@
 """Read-only dependency check for the selected research-presentation route."""
-import argparse,importlib.util,json,sys,subprocess
+import argparse,importlib.util,json,os,sys,subprocess
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser(description=__doc__)
@@ -13,7 +13,7 @@ if args.mode in ('svg','all'):
 checks={name:importlib.util.find_spec(name) is not None for name in modules}
 checks.update({name:(root/name).is_file() for name in files})
 if args.mode in ('wps','all'):
-    py=root.parents[1]/'tools/harness-anything/.venv/Scripts/python.exe'
+    py=Path(os.environ.get('CODEX_HOME', Path.home()/'.codex'))/'tools/harness-anything/.venv/Scripts/python.exe'
     checks['wps_python']=py.is_file()
     if py.is_file():
         probe=subprocess.run([str(py),'-c','import win32com.client,win32gui'],capture_output=True)
